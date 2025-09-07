@@ -11,18 +11,56 @@ public class Main {
         int N = Integer.parseInt(br.readLine());
         int M = Integer.parseInt(br.readLine());
         String text = br.readLine();
-        String ioi = "I";
+        StringBuilder pattern = new StringBuilder("I");
 
         for (int i = 0; i < N; i++) {
-            ioi += "OI";
+            pattern.append("OI");
         }
 
-        int cnt = 0;
-        for (int i = 0; i < M - (N * 2); i++) {
-            if (text.substring(i, i + (N * 2) + 1).equals(ioi)) cnt++;
-        }
+        int[] lpsArr = lps(pattern.toString());
 
-        System.out.println(cnt);
+        System.out.println(KMP(text, pattern.toString(), lpsArr));
+    }
+
+    public static int[] lps(String pattern) {
+        int[] lpsArr = new int[pattern.length()];
+        int len = 0;
+        int i = 1;
+
+        while (i < pattern.length()) {
+            if (pattern.charAt(i) == pattern.charAt(len)) {
+                lpsArr[i++] = ++len;
+            } else {
+                if (len != 0) {
+                    len = lpsArr[len - 1];
+                } else {
+                    lpsArr[i++] = 0;
+                }
+            }
+        }
+        return lpsArr;
+    }
+
+    private static int KMP(String text, String pattern, int[] lpsArr) {
+        int i = 0, j = 0, cnt = 0;
+
+        while (i < text.length()) {
+            if (text.charAt(i) == pattern.charAt(j)) {
+                i++;
+                j++;
+                if (j == pattern.length()) {
+                    cnt++;
+                    j = lpsArr[j - 1];
+                }
+            } else {
+                if (j != 0) {
+                    j = lpsArr[j - 1];
+                } else {
+                    i++;
+                }
+            }
+        }
+        return cnt;
     }
 }
 
